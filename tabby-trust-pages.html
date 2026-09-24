@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تابي — مستوى الثقة وزيادة الحد</title>
+<style>
+  :root{
+    /* تم تحديث لون تابي الأخضر إلى الدرجة النعناعية الصحيحة */
+    --tabby-green:#51F593;
+    --tabby-green-deep:#21D16B;
+    --ink:#0E1912;
+    --ink-soft:#6B746D;
+    --paper:#F6F6F1;
+    --card:#FFFFFF;
+    --line:rgba(14,25,18,0.08);
+    box-sizing:border-box;
+  }
+  *{box-sizing:inherit;}
+  html,body{margin:0;padding:0;background:var(--paper);}
+  body{
+    font-family:"SF Arabic","Segoe UI Arabic","Tahoma","Dubai",system-ui,sans-serif;
+    color:var(--ink);
+    padding:48px 24px;
+    min-height:100%;
+  }
+  h1{
+    text-align:center;
+    font-size:15px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:0 0 34px;
+  }
+
+  /* Layout Styles */
+  .page-layout {
+    display: flex;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .text-panel {
+    flex: 1;
+    min-width: 320px;
+    background: var(--card);
+    padding: 32px;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px -20px rgba(14,25,18,0.1);
+  }
+  .text-panel h2 {
+    font-size: 16px;
+    color: var(--ink);
+    margin: 28px 0 12px;
+    background: var(--tabby-green);
+    padding: 6px 14px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+  .text-panel h2:first-child {
+    margin-top: 0;
+  }
+  .text-panel p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    margin: 0;
+    font-weight: 500;
+  }
+  .phones-panel {
+    flex: 2;
+    min-width: 650px;
+  }
+
+  /* Stage & Phone */
+  .stage{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;}
+  .phone{
+    width:300px;height:634px;background:#000;border-radius:46px;padding:10px;
+    box-shadow:0 30px 60px -20px rgba(14,25,18,.35);position:relative;
+  }
+  .screen{
+    width:100%;height:100%;background:var(--paper);border-radius:38px;
+    overflow:hidden;position:relative;display:flex;flex-direction:column;
+  }
+  .notch{
+    position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    width:96px;height:22px;background:#000;border-radius:14px;z-index:20;
+  }
+  .statusbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 24px 4px;font-size:13px;font-weight:700;direction:ltr;
+  }
+  .caption{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:12px;font-weight:600;}
+  .scroll{flex:1;overflow-y:auto;padding:6px 18px 22px;}
+
+  /* ---- Page 1: account ---- */
+  .avatar{
+    width:74px;height:74px;border-radius:50%;background:#EDEDE8;
+    display:flex;align-items:center;justify-content:center;margin:6px auto 10px;
+  }
+  .name{text-align:center;font-size:19px;font-weight:800;margin-bottom:16px;}
+  .list-card{background:var(--card);border-radius:20px;overflow:hidden;margin-bottom:12px;}
+  .list-row{
+    display:flex;align-items:center;gap:10px;padding:13px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .list-row:last-child{border-bottom:none;}
+  .list-row .chev{color:var(--ink-soft);}
+  .list-row .txt{flex:1;}
+  .list-row .title{font-size:13px;font-weight:700;}
+  .list-row .sub{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .icon-circle{
+    width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;
+  }
+
+  .trust-card{
+    background:var(--ink);border-radius:22px;padding:18px;color:#fff;
+    position:relative;overflow:hidden;
+  }
+  .trust-card::after{
+    content:"";position:absolute;inset:auto -30% -60% auto;width:180px;height:180px;
+    background:var(--tabby-green);opacity:.18;border-radius:50%;
+  }
+  .trust-top{display:flex;align-items:center;gap:16px;}
+  .gauge{width:78px;height:78px;flex-shrink:0;position:relative;}
+  .gauge svg{transform:rotate(-90deg);}
+  .gauge .pct{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:800;
+  }
+  .trust-info .label{font-size:12px;color:rgba(255,255,255,.65);font-weight:600;}
+  .trust-info .value{font-size:14px;font-weight:800;margin-top:2px;}
+  .trust-divider{height:1px;background:rgba(255,255,255,.15);margin:14px 0;}
+  .allow-row{display:flex;justify-content:space-between;align-items:center;}
+  .allow-row .label{font-size:11.5px;color:rgba(255,255,255,.65);font-weight:600;}
+  .allow-row .amount{font-size:20px;font-weight:800;margin-top:2px;}
+  .boost-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--tabby-green);color:var(--ink);font-weight:800;font-size:12.5px;
+    border-radius:12px;padding:9px 14px;white-space:nowrap;
+  }
+
+  /* ---- Page 2: increase limit ---- */
+  .app-header{display:flex;align-items:center;gap:14px;margin:6px 0 14px;}
+  .back-btn{
+    width:34px;height:34px;border-radius:50%;background:var(--card);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px -3px rgba(14,25,18,.2);
+  }
+  .app-header h2{font-size:18px;font-weight:800;margin:0;}
+  .intro{font-size:12.5px;color:var(--ink-soft);font-weight:600;line-height:1.7;margin-bottom:16px;}
+  .mini-gauge-card{
+    display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;
+    padding:14px;margin-bottom:18px;
+  }
+  .mini-gauge{width:52px;height:52px;position:relative;flex-shrink:0;}
+  .mini-gauge svg{transform:rotate(-90deg);}
+  .mini-gauge .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+  .mini-gauge-card .label{font-size:12px;font-weight:800;}
+  .mini-gauge-card .sub{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+
+  .step{
+    display:flex;gap:12px;background:var(--card);border-radius:18px;padding:14px;margin-bottom:10px;
+  }
+  .step .num{
+    width:28px;height:28px;border-radius:50%;background:var(--tabby-green);
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex-shrink:0;
+  }
+  .step .title{font-size:13px;font-weight:800;margin-bottom:3px;}
+  .step .desc{font-size:11.5px;color:var(--ink-soft);font-weight:600;line-height:1.6;}
+  .step .status{
+    margin-top:8px;display:inline-block;font-size:10px;font-weight:800;color:var(--ink-soft);
+    background:var(--paper);border-radius:999px;padding:3px 9px;
+  }
+  .cta-btn{
+    margin-top:6px;background:var(--tabby-green);color:var(--ink);font-weight:800;font-size:13.5px;
+    text-align:center;border-radius:16px;padding:13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-layout">
+  
+  <!-- Text Panel (Right Side) -->
+  <div class="text-panel">
+    <h2>١. عنوان المشاركة</h2>
+    <p>بطاقة الثقة: شفافية الرفض وحدود التقسيط</p>
+    
+    <h2>٢. المشكلة أو الفرصة</h2>
+    <p>عند رفض طلب شراء أو تخفيض الحد الائتماني، يظهر للمستخدم إشعار مبهم بدون سبب واضع. غياب الشفافية يجعل القرار يبدو عشوائيًا، مما يقلل ثقة العملاء ويُحمل فريق الدعم الفني عبء استفسارات متكررة كان يمكن تفاديها.</p>
+    
+    <h2>٣. وش بتغيّر</h2>
+    <p>إطلاق "بطاقة الثقة" تظهر فور الرفض مباشرةً لتوضيح السبب الفعلي بلغة بسيطة ومباشرة (مثال: "تجاوزت الحد المسموح لهذا المتجر" أو "لديك دفعة متأخرة")، مع تقديم حل عملي فوري يتيح للمستخدم إكمال الشراء (مثل: تسديد المتأخرات أو تقليل قيمة السلة).</p>
+    
+    <h2>٤. ليش تفرق ولمين</h2>
+    <p>تستهدف أي مستخدم يواجه رفضًا مفاجئًا أو تخفيضًا للحد. بناءً على تحليل عينة من تقييمات المتجر (~١٪ يشتكون صراحة من غموض الرفض)، تحسّن الميزة تجربة أكثر من ١٠٠,٠٠٠ مستخدم، وتخفض تذاكر الدعم الفني، وتحمي معدلات الاحتفاظ بالعملاء (Retention).</p>
+  </div>
+
+  <!-- Phones Panel (Left Side) -->
+  <div class="phones-panel">
+    <h1>تابي — مستوى الثقة وزيادة الحد</h1>
+
+    <div class="stage">
+
+      <!-- Phone 1: Account page -->
+      <div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>17:47</span>
+              <span>🔋</span>
+            </div>
+            <div class="scroll">
+              <div class="avatar">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#B9BDB6"/><path d="M4 20c1.5-4.2 4.5-6 8-6s6.5 1.8 8 6" stroke="#B9BDB6" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+              </div>
+              <div class="name">Abdulrahman</div>
+
+              <div class="list-card">
+                <div class="list-row">
+                  <svg class="chev" width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <div class="txt"><div class="title">أكمل إعداد حسابك</div></div>
+                  <div class="icon-circle" style="background:#EFF8F0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4" fill="none" stroke="#1AAE68" stroke-width="1.6"/><path d="M5 20c1.4-3.8 4-5.5 7-5.5s5.6 1.7 7 5.5" stroke="#1AAE68" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+                <div class="list-row">
+                  <svg class="chev" width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <div class="txt"><div class="title">قفل الإشعارات</div></div>
+                  <div class="icon-circle" style="background:#F3F3EE;">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 3a5 5 0 0 0-5 5v3.6c0 .5-.2 1-.5 1.4L5 15.5h14l-1.5-2.5a2 2 0 0 1-.5-1.4V8a5 5 0 0 0-5-5z" stroke="#0E1912" stroke-width="1.5" fill="none"/></svg>
+                  </div>
+                </div>
+                <div class="list-row">
+                  <svg class="chev" width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <div class="txt"><div class="title">ادعُ أصدقاءك</div><div class="sub">اكسب حتى 200 ﷼</div></div>
+                  <div class="icon-circle" style="background:#FDF1E0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 8l8-5 8 5v9l-8 5-8-5V8z" stroke="#E08A1E" stroke-width="1.5" fill="none"/></svg>
+                  </div>
+                </div>
+                <div class="list-row">
+                  <svg class="chev" width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <div class="txt"><div class="title">أضف صورتك</div></div>
+                  <div class="icon-circle" style="background:#EEF2FB;">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#3B5BDB" stroke-width="1.5"/><circle cx="9" cy="11" r="1.6" fill="#3B5BDB"/><path d="M4 17l5-4 4 3 3-3 4 4" stroke="#3B5BDB" stroke-width="1.4" fill="none"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="list-card">
+                <div class="list-row" style="border-bottom:none;">
+                  <svg class="chev" width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <div class="txt"><div class="title">الكاش باك</div></div>
+                  <div class="icon-circle" style="background:linear-gradient(135deg,#F9A8D4,#F472B6);">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2l2.5 6.8L21 11l-6.5 2.2L12 20l-2.5-6.8L3 11l6.5-2.2L12 2z" fill="#fff"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Trust card -->
+              <div class="trust-card">
+                <div class="trust-top">
+                  <div class="gauge">
+                    <svg width="78" height="78" viewBox="0 0 78 78">
+                      <circle cx="39" cy="39" r="33" stroke="rgba(255,255,255,.15)" stroke-width="8" fill="none"/>
+                      <circle cx="39" cy="39" r="33" stroke="#51F593" stroke-width="8" fill="none"
+                              stroke-linecap="round" stroke-dasharray="207.3" stroke-dashoffset="103.6"/>
+                    </svg>
+                    <div class="pct">50%</div>
+                  </div>
+                  <div class="trust-info">
+                    <div class="label">مستوى الثقة</div>
+                    <div class="value">متوسط — يمكنك رفعه</div>
+                  </div>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="allow-row">
+                  <div>
+                    <div class="label">المبلغ المسموح للتقسيط</div>
+                    <div class="amount">SAR 4,500</div>
+                  </div>
+                  <div class="boost-btn">
+                    <span>+</span><span>زد الحد</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="caption">الصفحة الأولى — الحساب ومستوى الثقة</div>
+      </div>
+
+      <!-- Phone 2: Increase limit -->
+      <div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>17:47</span>
+              <span>🔋</span>
+            </div>
+            <div class="scroll">
+              <div class="app-header">
+                <div class="back-btn">
+                  <svg width="9" height="15" viewBox="0 0 9 15"><path d="M8 1L1.5 7.5 8 14" stroke="#0E1912" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h2>كيف تزيد حدك</h2>
+              </div>
+
+              <div class="intro">
+                حدك المسموح يتحدث تلقائيًا كل ما ارتفع مستوى ثقتك. خلّك ملتزم بالخطوات التالية عشان تشوف فرق ملموس.
+              </div>
+
+              <div class="mini-gauge-card">
+                <div class="mini-gauge">
+                  <svg width="52" height="52" viewBox="0 0 52 52">
+                    <circle cx="26" cy="26" r="21" stroke="#EDEDE8" stroke-width="6" fill="none"/>
+                    <circle cx="26" cy="26" r="21" stroke="#51F593" stroke-width="6" fill="none"
+                            stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="66"/>
+                  </svg>
+                  <div class="pct">50%</div>
+                </div>
+                <div>
+                  <div class="label">مستواك الحالي: متوسط</div>
+                  <div class="sub">حدك الآن SAR 4,500</div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">1</div>
+                <div>
+                  <div class="title">اربط حسابك البنكي</div>
+                  <div class="desc">عبر الخدمات المصرفية المفتوحة نتحقق من نشاطك المالي فورًا بدل الانتظار لتقييم تقليدي بطيء.</div>
+                  <div class="status">لم يتم الربط بعد</div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">2</div>
+                <div>
+                  <div class="title">حافظ على سجل دفعات منتظم</div>
+                  <div class="desc">السداد في وقته يرفع مستوى ثقتك تدريجيًا مع كل دفعة تسددها بدون تأخير.</div>
+                  <div class="status">جارٍ التتبع</div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">3</div>
+                <div>
+                  <div class="title">أكمل ملفك الشخصي</div>
+                  <div class="desc">بيانات مكتملة ودقيقة تساعدنا نقيّم طلبك بشكل أعدل وأسرع.</div>
+                  <div class="status">مكتمل جزئيًا</div>
+                </div>
+              </div>
+
+              <div class="cta-btn">ابدأ بربط حسابك البنكي</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">الصفحة الثانية — طريقة زيادة الحد</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
